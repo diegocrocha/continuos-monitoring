@@ -1,0 +1,23 @@
+---
+- name: Deploy application to CI-Server
+  hosts: monitoring
+  become: true
+  roles:
+    - grafana
+    - prometheus
+    - node_exporter
+
+- name: Deploy application Node-Server
+  hosts: node
+  become: true
+  tasks:
+    - name: Create Prometheus repository
+      template:
+        src: ./roles/prometheus/templates/prometheus.repo.j2
+        dest: /etc/yum.repos.d/prometheus-rpm_release.repo
+
+- name: Deploy application Node-Server (Continued)
+  hosts: node
+  become: true
+  roles:
+    - node_exporter

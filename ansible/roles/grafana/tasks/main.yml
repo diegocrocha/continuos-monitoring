@@ -1,0 +1,35 @@
+---
+- name: Install Grafana
+  yum:
+    name: grafana
+    state: present
+
+- name: Create Grafana user
+  user:
+    name: grafana
+    shell: /bin/false
+    createhome: true
+
+- name: Create Grafana repository
+  template:
+    src: grafana.repo.j2
+    dest: /etc/yum.repos.d/grafana.repo
+  notify: Reload systemd
+
+- name: Reboot EC2 instance
+  reboot:
+    reboot_timeout: 120
+    pre_reboot_delay: 10
+    post_reboot_delay: 30
+
+- name: Configure Grafana
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+  notify: Restart Grafana
+
+- name: Enable Grafana service
+  service:
+    name: grafana-server
+    state: started
+    enabled: yes

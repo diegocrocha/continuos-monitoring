@@ -1,0 +1,64 @@
+---
+- name: Install required packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - wget
+    - git
+    - net-tools
+
+- name: Create Prometheus user
+  user:
+    name: prometheus
+    shell: /bin/false
+    createhome: true
+
+- name: Create Prometheus repository
+  template:
+    src: prometheus.repo.j2
+    dest: /etc/yum.repos.d/prometheus-rpm_release.repo
+
+- name: Install Prometheus
+  yum:
+    name: prometheus
+    state: present
+
+- name: Config file metrics
+  template:
+    src: "{{ item }}.yml.j2"
+    dest: "/etc/prometheus/{{ item }}.yml"
+  loop:
+    - cpu
+    - disco
+    - memoria
+    - portas
+  notify:
+    - Reload systemd
+    - Restart Prometheus service
+
+- name: Config file
+  template:
+    src: prometheus.conf.j2
+    dest: /etc/prometheus/prometheus.conf
+  notify: 
+    - Reload systemd
+    - Restart Prometheus service
+
+- name: Create Prometheus systemd service
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+  notify: Reload systemd
+
+- name: Start Prometheus service
+  systemd:
+    name: prometheus
+    state: started
+    enabled: true
+    
+- name: Wait Prometheus service
+  wait_for:
+    host: "127.0.0.1"
+    port: "9090"
+    timeout: 120

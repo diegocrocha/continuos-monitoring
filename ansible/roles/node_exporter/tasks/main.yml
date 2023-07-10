@@ -1,0 +1,22 @@
+---
+- name: Install Node Exporter
+  yum:
+    name: node_exporter
+    state: present
+
+- name: Copy Node Exporter systemd service file
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+  notify: Reload systemd
+
+- name: Start Node Exporter service
+  systemd:
+    name: node_exporter
+    state: started
+    enabled: yes
+
+- name: Wait node_exporter service
+  wait_for:
+    host: "127.0.0.1"
+    port: "9100"  

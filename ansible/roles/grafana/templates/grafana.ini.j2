@@ -1,0 +1,40 @@
+# Default Grafana configuration file
+
+[server]
+http_port = 3000
+root_url = http://localhost:3000/grafana/
+
+[database]
+# Configure your database connection here
+
+[analytics]
+# Disable anonymous usage analytics
+check_for_updates = false
+reporting_enabled = false
+
+[security]
+# Configure authentication and authorization settings here
+
+[auth.anonymous]
+enabled = true
+
+[auth.basic]
+enabled = false
+
+[auth.github]
+enabled = false
+
+[auth.google]
+enabled = false
+
+[auth.proxy]
+enabled = false
+
+[metrics]
+# Configure metrics settings here
+
+[grafana_net]
+# Configure Grafana.net integration settings here
+
+[datasource_prometheus]
+url = http://localhost:9090
