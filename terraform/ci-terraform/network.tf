@@ -152,3 +152,13 @@ resource "aws_security_group_rule" "grafana_egress" {
   cidr_blocks       = ["0.0.0.0/0"]
   description       = "Allow outbound Grafana traffic"
 }
+
+resource "aws_security_group_rule" "node_exporter_egress" {
+  security_group_id = module.ci_sg.security_group_id
+  type              = "egress"
+  from_port         = 9100
+  to_port           = 9100
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  description       = "Allow outbound Node Exporter traffic"
+}
