@@ -1,0 +1,13 @@
+USE `ecommerce`;
+
+SELECT * FROM `clientes`;
+
+SELECT `id_produto`, `nome_produto`, SUM(`quantidade`) AS `quantidade` FROM `pedidos_items` 
+LEFT JOIN (SELECT `id_produto` AS 'id', `nome` AS 'nome_produto' FROM `produtos`) AS tbAux ON id = id_produto 
+GROUP BY `id_produto` 
+ORDER BY `quantidade` DESC;
+
+SELECT `id_produto`, `nome_produto`, SUM(`valor_total`) AS `valor_total` FROM `pedidos_items` 
+LEFT JOIN (SELECT `id_produto` AS 'id', `nome` AS 'nome_produto' FROM `produtos`) AS tbAux ON id = id_produto 
+GROUP BY `id_produto` 
+ORDER BY `valor_total` DESC;

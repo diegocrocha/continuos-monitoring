@@ -1,0 +1,64 @@
+CREATE DATABASE IF NOT EXISTS `ecommerce`;
+
+USE `ecommerce`;
+
+CREATE TABLE IF NOT EXISTS `clientes` (
+  `id_cliente` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(128) NOT NULL,
+  `endereco` VARCHAR(128) NOT NULL,
+  `complemento` VARCHAR(32) NULL DEFAULT '',
+  `bairro` VARCHAR(128) NOT NULL,
+  `cidade` VARCHAR(128) NOT NULL,
+  `estado` VARCHAR(2) NOT NULL,
+  `cep` VARCHAR(9) NOT NULL,
+  `telefone` VARCHAR(20) NULL DEFAULT '',
+  PRIMARY KEY (`id_cliente`)
+) AUTO_INCREMENT = 0;
+
+CREATE TABLE IF NOT EXISTS `grupos_produtos` (
+  `id_grupo_produto` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(128)  NOT NULL,
+  PRIMARY KEY (`id_grupo_produto`)
+) AUTO_INCREMENT = 0;
+
+CREATE TABLE IF NOT EXISTS `produtos` (
+  `id_produto` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(128) NOT NULL,
+  `tamanho` VARCHAR(6) NOT NULL,
+  `valor` FLOAT(11) NOT NULL,
+  `quantidade` INT(11) NOT NULL,
+  `id_grupo_produto` INT(11) NOT NULL,
+  PRIMARY KEY (`id_produto`)
+) AUTO_INCREMENT = 0;
+
+CREATE TABLE IF NOT EXISTS `forma_pagamento` (
+  `id_pagamento` INT(11) NOT NULL AUTO_INCREMENT,
+  `nome` VARCHAR(128) NOT NULL,
+  PRIMARY KEY (`id_pagamento`)
+) AUTO_INCREMENT = 0;
+
+CREATE TABLE IF NOT EXISTS `pedidos` (
+  `id_pedido` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_cliente` INT(11) NOT NULL,
+  `data_pedido` DATETIME NOT NULL,
+  `id_pagamento` INT(11) NOT NULL,
+  PRIMARY KEY (`id_pedido`)
+) AUTO_INCREMENT = 0;
+
+CREATE TABLE IF NOT EXISTS `pedidos_items` (
+  `id_item` INT(11) NOT NULL AUTO_INCREMENT,
+  `id_pedido` INT(11) NOT NULL,
+  `id_produto` INT(11) NOT NULL,
+  `quantidade` INT(11) NOT NULL,
+  `valor_unitario` FLOAT(11) NOT NULL,
+  `valor_total` FLOAT(11) NOT NULL,
+  PRIMARY KEY (`id_item`)
+) AUTO_INCREMENT = 0;
+
+ALTER TABLE `produtos` ADD FOREIGN KEY (`id_grupo_produto`) REFERENCES `grupos_produtos` (`id_grupo_produto`);
+
+ALTER TABLE `pedidos` ADD  CONSTRAINT FK_id_cliente FOREIGN KEY (`id_cliente`) REFERENCES `clientes` (`id_cliente`);
+ALTER TABLE `pedidos` ADD  CONSTRAINT FK_id_pagamento FOREIGN KEY (`id_pagamento`) REFERENCES `forma_pagamento` (`id_pagamento`);
+
+ALTER TABLE `pedidos_items` ADD CONSTRAINT FK_id_pedido FOREIGN KEY (`id_pedido`) REFERENCES `pedidos` (`id_pedido`);
+ALTER TABLE `pedidos_items` ADD CONSTRAINT FK_id_produto FOREIGN KEY (`id_produto`) REFERENCES `produtos` (`id_produto`);

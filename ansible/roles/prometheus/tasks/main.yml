@@ -7,6 +7,7 @@
     - wget
     - git
     - net-tools
+    - bash-completion
 
 - name: Create Prometheus user
   user:
@@ -23,19 +24,6 @@
   yum:
     name: prometheus
     state: present
-
-- name: Config file metrics
-  template:
-    src: "{{ item }}.yml.j2"
-    dest: "/etc/prometheus/{{ item }}.yml"
-  loop:
-    - cpu
-    - disco
-    - memoria
-    - portas
-  notify:
-    - Reload systemd
-    - Restart Prometheus service
 
 - name: Config file
   template:

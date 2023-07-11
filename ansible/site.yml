@@ -3,9 +3,9 @@
   hosts: monitoring
   become: true
   roles:
-    - grafana
     - prometheus
     - node_exporter
+    - grafana
 
 - name: Deploy application Node-Server
   hosts: node
@@ -21,3 +21,4 @@
   become: true
   roles:
     - node_exporter
+    - mariadb
