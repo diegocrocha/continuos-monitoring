@@ -22,9 +22,10 @@ Before running this project, ensure that you have the following:
 
 ### 2. Update the following files with your specific configuration:
 
-   - `private_key_file`: Change the .pem at ansible.cfg.
-   - `key_name`:  Change the .pem at ci-ec2.tf and node-ec2.tf
+   - `private_key_file`: Swap the .pem at ansible.cfg.
+   - `key_name`: Swap the .pem at ci-ec2.tf and node-ec2.tf
    - `ansible/inventory.ini`: Create the iventoy.ini with the group [monitoring] and [node] and pass the IP addresses with the actual IP addresses of your EC2 instances.
+   - `bucket`: Swap for an existing bucket in your account.
 
 ## Deployment
 
