@@ -49,3 +49,69 @@
     priv: "ecommerce.*:ALL"
     state: present
   become: yes
+
+- name: Check if SQL scripts have been executed
+  stat:
+    path: /tmp/sql_scripts_executed.flag
+  register: scripts_executed
+
+- name: Execute SQL scripts
+  mysql_db:
+    login_user: root
+    login_password: admin
+    db: mydatabase
+    state: import
+    target: "/tmp/{{ item }}.sql"
+  loop:
+    - create
+    - insert
+    - query
+  when: scripts_executed.stat.exists == false
+
+- name: Create flag file to mark scripts execution
+  file:
+    path: /tmp/sql_scripts_executed.flag
+    state: touch
+  when: scripts_executed.stat.exists == false
+
+- name: Download Prometheus MySQL Exporter
+  shell: "curl -s https://api.github.com/repos/prometheus/mysqld_exporter/releases/latest | grep browser_download_url | grep linux-amd64 | cut -d '\"' -f 4 | wget -qi -"
+  args:
+    chdir: "/tmp"
+  register: download_output
+  changed_when: download_output.stdout != ""
+  
+- name: Extract Prometheus MySQL Exporter
+  shell: "tar xvf /tmp/mysqld_exporter*.tar.gz"
+  args:
+    chdir: "/tmp"
+  register: extract_output
+  changed_when: extract_output.stdout != ""
+  
+- name: Move Prometheus MySQL Exporter binary
+  shell: "mv /tmp/mysqld_exporter-*.linux-amd64/mysqld_exporter /usr/local/bin/"
+  args:
+    chdir: "/tmp"
+    executable: /bin/bash
+    warn: no
+  register: move_output
+  changed_when: move_output.stdout != ""
+  
+- name: Set permissions for Prometheus MySQL Exporter binary
+  file:
+    path: "/usr/local/bin/mysqld_exporter"
+    mode: "u+x"
+  
+- name: Create database credentials file
+  template:
+    src: my.cnf.j2
+    dest: /etc/.mysqld_exporter.cnf
+  
+- name: Create systemd unit file for MySQL Exporter
+  template:
+    src: sqlexporter.service.j2
+    dest: /etc/systemd/system/mysql_exporter.service
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
